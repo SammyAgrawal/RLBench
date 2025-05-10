@@ -1,3 +1,5 @@
+import time
+import subprocess
 import os
 import sys
 from os.path import join, dirname, abspath, isfile
@@ -267,7 +269,18 @@ class LoadedTask(object):
 
 
 if __name__ == '__main__':
+    # Start Xvfb manually (xvfb-run does this under the hood)
+    subprocess.Popen([
+        'Xvfb', ':99', '-screen', '0', '1280x1024x24', '+extension', 'GLX', '+render', '-noreset'
+    ])
 
+    time.sleep(2)  # Give Xvfb time to start
+
+    # Set environment variables to match your working terminal setup
+    os.environ['DISPLAY'] = ':99'
+    os.environ['LIBGL_ALWAYS_SOFTWARE'] = '1'
+    os.environ['LIBGL_DRIVERS_PATH'] = '/usr/lib/x86_64-linux-gnu/dri'
+    os.environ['LD_PRELOAD'] = '/usr/lib/x86_64-linux-gnu/libffi.so.7'
     setup_list_completer()
 
     pr = PyRep()
